@@ -38,8 +38,10 @@ void row_remove(row* current_row, const unsigned int char_pos){
     if(current_row == NULL) return;
     if(current_row->size == 1) return;
     for(int i = char_pos-1; i < current_row->size-1; i++){
+        if(i < 0) continue;
         current_row->characters[i] = current_row->characters[i+1];
     }
+    current_row->size--;
 }
 
 void row_pop(row* current_row){
@@ -154,11 +156,15 @@ void editor_popLastCharacter(editor_cfg* cfg){
         return;
     }
     row* edit_row = cfg->rows_stack[cfg->cursor_y];
-    if(edit_row->size <= 1){ // if the size is equal one, we just destroy the current line
-        if(cfg->current_row > 1){ // we cant destroy the first line
+    if(edit_row == NULL) return;
+    if(edit_row->size == 1){ // if the size is equal one, we just destroy the current line
+        if(cfg->cursor_y > 0){ // we cant destroy the first line
             row_destroy(edit_row);
-            for(int i = cfg->cursor_y; i < cfg->current_row; i++){
-                cfg->rows_stack[i] = cfg->rows_stack[i+1];
+            edit_row = NULL;
+            if(cfg->current_row != cfg->cursor_y+1){
+                for(int i = cfg->cursor_y; i < cfg->current_row-1; i++){
+                    cfg->rows_stack[i] = cfg->rows_stack[i+1];
+                } // we modify the other rolls position
             }
             if(cfg->cursor_y == cfg->current_row-1) cfg->cursor_x = cfg->rows_stack[cfg->cursor_y-1]->size;
             cfg->current_row--;
