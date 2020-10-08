@@ -19,6 +19,7 @@ void core_init(int argc, char** argv){
     init_pair(4, COLOR_MAGENTA+8, COLOR_BLACK);
     init_pair(5, COLOR_BLUE+8, COLOR_BLACK);
     init_pair(6, COLOR_YELLOW+8, COLOR_BLACK);
+    init_pair(7, COLOR_MAGENTA, COLOR_BLACK);
     attron(COLOR_PAIR(1));
     curs_set(1);
     mainEditor = editor_create();

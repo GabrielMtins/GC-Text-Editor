@@ -25,6 +25,8 @@ void editor_loadFile(editor_cfg* cfg, const char* filename){
         }
         else{
             editor_addRow(cfg);
+            cfg->rows_stack[cfg->current_row-1]->characters[0] = '\0';
+            cfg->rows_stack[cfg->current_row-1]->size = 1;
         }
     }
     cfg->cursor_x = 0;
