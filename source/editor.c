@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdint.h>
+#include <ctype.h>
 #include <ncurses.h>
 
 row* row_create(){
@@ -80,7 +81,8 @@ void editor_addRow(editor_cfg* cfg){
             char new_line_str[256] = ""; // this is the next line
             int size_to_copy = cfg->rows_stack[cfg->cursor_y-1]->size-cfg->cursor_x-1; // this is how many bytes we need to copy
             char* row_ptr = cfg->rows_stack[cfg->cursor_y-1]->characters; // this is the pointer to the current row
-            strncpy(new_line_str, row_ptr+cfg->cursor_x, size_to_copy);
+            strncat(new_line_str, row_ptr+cfg->cursor_x, size_to_copy);
+            row_ptr[cfg->cursor_x] = '\0';
             /*
                 here we just copy the part in front of the cursor to another line:
                 test
@@ -88,10 +90,31 @@ void editor_addRow(editor_cfg* cfg){
                 te
                 st
             */
-            row_ptr[cfg->cursor_x] = '\0';
             strcpy(cfg->rows_stack[cfg->cursor_y]->characters, new_line_str);
         }
-        cfg->cursor_x = 0;
+        else{
+            // basically this codes adds a tab to the next line if there's a tab on the current line
+            // just so it makes easier to code
+            char* row_ptr = cfg->rows_stack[cfg->cursor_y-1]->characters;
+            int howManyTabs = 0;
+            while(1){
+                int end = 0;
+                for(int j = 0; j < TAB_SIZE; j++){
+                    if(row_ptr[j+howManyTabs*TAB_SIZE] != ' '){
+                        end = 1;
+                        break;
+                    }
+                }
+                if(end) break;
+                howManyTabs++;
+            } // here we count how many tabs there are
+            for(int i = 0; i < howManyTabs; i++){
+                for(int j = 0; j < TAB_SIZE; j++){
+                    row_addCharacter(cfg->rows_stack[cfg->cursor_y], ' '); // here we add the tabs to the next line
+                }
+            }
+        }
+        cfg->cursor_x = cfg->rows_stack[cfg->cursor_y]->size+1;
     }
 }
 
@@ -140,7 +163,7 @@ void editor_input(editor_cfg* cfg, const int character_push){
             }
         }
         else{
-            for(int i = 0; i < TAB_SIZE; i++){
+            for(int i = 0; i < TAB_SIZE; i++){ // we insert tab as TAB_SIZE spaces
                 row_insertCharacter(cfg->rows_stack[cfg->cursor_y], ' ', cfg->cursor_x);
                 cfg->cursor_x++;
             }
@@ -172,8 +195,13 @@ void editor_popLastCharacter(editor_cfg* cfg){
         }
     }
     else{ // else we just pop the character of cursor on line
+        int deleted_char = isspace(edit_row->characters[cfg->cursor_x-1]);
         row_remove(edit_row, cfg->cursor_x);
         cfg->cursor_x--;
+        int new_char = isspace(edit_row->characters[cfg->cursor_x-1]);
+        if(new_char && deleted_char) editor_popLastCharacter(cfg);
+        // if the deleted character is an space, we call it again to delete another space
+        // i use this so I can delete tabs faster
         if(cfg->cursor_x < 0) cfg->cursor_x = 0;
     }
 }
@@ -205,11 +233,15 @@ void editor_draw(const editor_cfg* cfg){
     int min_lines = cfg->current_row;
     if(min_lines > y_max) min_lines = y_max;// the minimum number of lines to print
     for(int i = 0; i < min_lines; i++){
-        move(i, 0);
         char str_num[256] = "";
         sprintf(str_num, "%i", i+1+offset_lines); // convert the number to a string
+        int move_by = 0; // i need this for the numbers be aligned
+        if(i+offset_lines+1 < 10) move_by = 2;
+        else if(i+offset_lines+1 < 100) move_by = 1;
+        attron(COLOR_PAIR(7)); // set color to magenta
+        move(i, move_by);
         printw(str_num); // print the number of the line
-        util_printSyntaxC(cfg->rows_stack[i+offset_lines]->characters, strlen(str_num)+1, i, x_max);
+        util_printSyntaxC(cfg->rows_stack[i+offset_lines]->characters, 4, i, x_max-4);
     }
     { // draw commands
         attron(COLOR_PAIR(1));
@@ -221,6 +253,7 @@ void editor_draw(const editor_cfg* cfg){
     { // draw cursor
         int offset_cursor_x = 0;
         if(cfg->cursor_y+1 > 9) offset_cursor_x++;
-        move(cfg->cursor_y-offset_lines, cfg->cursor_x+2+offset_cursor_x);
+        if(cfg->mode != CMD_MODE) move(cfg->cursor_y-offset_lines, cfg->cursor_x+4);
+        else move(y_max, cfg->command_row->size+1);
     }
 }
