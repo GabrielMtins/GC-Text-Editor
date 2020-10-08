@@ -19,7 +19,6 @@ void row_addCharacter(row* current_row, const char push_character){
     current_row->size++;
     current_row->characters[current_row->size-1] = '\0';
     current_row->characters[current_row->size-2] = push_character;
-    //strncat(current_row->characters, &push_character, 1);
 }
 
 void row_insertCharacter(row* current_row, const char push_character, const int position){
@@ -41,21 +40,6 @@ void row_remove(row* current_row, const unsigned int char_pos){
     for(int i = char_pos-1; i < current_row->size-1; i++){
         current_row->characters[i] = current_row->characters[i+1];
     }
-    /*
-    if(char_pos != 0){
-        strncpy(current_row->characters+char_pos-1, current_row->characters+char_pos, current_row->size-char_pos);
-        current_row->size--;
-        return;
-    }
-    else{
-        for(int i = 0; i < current_row->size-1; i++){
-            current_row->characters[i] = current_row->characters[i+1];
-        }
-        current_row->characters[current_row->size] = '\0';
-        current_row->size--;
-        return;
-    }
-    */
 }
 
 void row_pop(row* current_row){
@@ -189,17 +173,18 @@ void editor_popLastCharacter(editor_cfg* cfg){
 }
 
 void editor_processCommand(editor_cfg* cfg){
-    if(!strncmp(cfg->command_row->characters, "sv", 2)){ // cmp to first 4 bytes
+    if(!strncmp(cfg->command_row->characters, "sv", 2)){ // cmp to first 2 bytes
         char save_file[256] = "";
         strncpy(save_file, cfg->command_row->characters+3, cfg->command_row->size-3); // cpy the final bytes
         editor_saveAsFile(cfg, save_file); // save file
     }
-    if(!strncmp(cfg->command_row->characters, "ld", 2)){ // cmp to first 4 bytes
+    if(!strncmp(cfg->command_row->characters, "ld", 2)){ // cmp to first 2 bytes
         char load_file[256] = "";
         strncpy(load_file, cfg->command_row->characters+3, cfg->command_row->size-3); // cpy the final bytes
         cfg->mode = TEXT_MODE;
         editor_loadFile(cfg, load_file); // save file
     }
+    cfg->mode = TEXT_MODE;
 }
 
 void editor_draw(const editor_cfg* cfg){
