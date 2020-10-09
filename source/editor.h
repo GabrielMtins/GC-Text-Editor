@@ -1,33 +1,36 @@
 #ifndef ROW_H
 #define ROW_H
 
+#include <stddef.h>
+#include <stdint.h>
+
 typedef struct{
     char characters[256];
-    int size;
+    size_t size;
 } row;
 
 row* row_create();
 
 void row_addCharacter(row* current_row, const char push_character);
 
-void row_insertCharacter(row* current_row, const char push_character, const int position);
+void row_insertCharacter(row* current_row, const char push_character, const size_t position);
 
-void row_remove(row* current_row, const unsigned int char_pos);
+void row_remove(row* current_row, const size_t char_pos);
 
 void row_pop(row* current_row);
 
 void row_destroy(row* current_row);
 
-#define MAX_ROWS 256
+#define MAX_ROWS 1024
 #define TEXT_MODE 0
 #define CMD_MODE 1
 
 #define TAB_SIZE 4
 
 typedef struct{
-    int cursor_x, cursor_y;
+    size_t cursor_x, cursor_y;
     row* rows_stack[MAX_ROWS];
-    int current_row;
+    size_t current_row;
     row* command_row;
     int mode;
 } editor_cfg;
