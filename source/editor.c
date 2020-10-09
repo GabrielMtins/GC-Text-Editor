@@ -84,14 +84,9 @@ void editor_addRow(editor_cfg* cfg){
             char* row_ptr = cfg->rows_stack[cfg->cursor_y-1]->characters; // this is the pointer to the current row
             strncat(new_line_str, row_ptr+cfg->cursor_x, size_to_copy);
             row_ptr[cfg->cursor_x] = '\0';
-            /*
-                here we just copy the part in front of the cursor to another line:
-                test
-                result of enter key:
-                te
-                st
-            */
+            // here we just copy the part in front of the cursor to another line:
             strcpy(cfg->rows_stack[cfg->cursor_y]->characters, new_line_str);
+            cfg->rows_stack[cfg->cursor_y]->size = strlen(new_line_str)+1;
         }
         else{
             // basically this codes adds a tab to the next line if there's a tab on the current line
