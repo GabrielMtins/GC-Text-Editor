@@ -22,31 +22,32 @@ void row_addCharacter(row* current_row, const char push_character){
     current_row->characters[current_row->size-2] = push_character;
 }
 
-void row_insertCharacter(row* current_row, const char push_character, const int position){
+void row_insertCharacter(row* current_row, const char push_character, const size_t position){
     if(position >= current_row->size-1){
         row_addCharacter(current_row, push_character);
         return;
     }
-    if(position < 0) return;
     current_row->size++;
-    for(int i = current_row->size-1; i >= position+1; i--){
+    for(size_t i = current_row->size-1; i >= position+1; i--){
         current_row->characters[i] = current_row->characters[i-1];
     }
     current_row->characters[position] = push_character;
 }
 
-void row_remove(row* current_row, const unsigned int char_pos){
+void row_remove(row* current_row, const size_t char_pos){
     if(current_row == NULL) return;
     if(current_row->size == 1) return;
-    for(int i = char_pos-1; i < current_row->size-1; i++){
-        if(i < 0) continue;
+    size_t new_pos = char_pos;
+    if(char_pos == 0) new_pos = 0;
+    else new_pos = char_pos-1;
+    for(size_t i = new_pos; i < current_row->size-1; i++){
         current_row->characters[i] = current_row->characters[i+1];
     }
     current_row->size--;
 }
 
 void row_pop(row* current_row){
-    if(current_row->size <= 1) return;
+    if(current_row->size == 3) return;
     current_row->characters[current_row->size-2] = '\0';
     current_row->size--;
 }
@@ -73,7 +74,7 @@ void editor_addRow(editor_cfg* cfg){
         cfg->rows_stack[0] = row_create();
     }
     else{
-        for(int i = cfg->current_row-1; i >= cfg->cursor_y; i--){
+        for(size_t i = cfg->current_row-1; i >= cfg->cursor_y; i--){
             cfg->rows_stack[i] = cfg->rows_stack[i-1];
         } // we modify the other rolls position
         cfg->rows_stack[cfg->cursor_y] = row_create();
@@ -121,7 +122,7 @@ void editor_addRow(editor_cfg* cfg){
 void editor_controlCursor(editor_cfg* cfg, const int key){
     switch(key){
         case KEY_LEFT:
-        cfg->cursor_x--;
+        if(cfg->cursor_x > 0) cfg->cursor_x--;
         break;
         case KEY_RIGHT:
         cfg->cursor_x++;
@@ -130,7 +131,7 @@ void editor_controlCursor(editor_cfg* cfg, const int key){
         cfg->cursor_y++;
         break;
         case KEY_UP:
-        cfg->cursor_y--;
+        if(cfg->cursor_y > 0) cfg->cursor_y--;
         break;
         case KEY_BACKSPACE:
         editor_popLastCharacter(cfg);
@@ -139,10 +140,6 @@ void editor_controlCursor(editor_cfg* cfg, const int key){
         if(cfg->mode == TEXT_MODE) editor_addRow(cfg);
         if(cfg->mode == CMD_MODE) editor_processCommand(cfg);
         break;
-    }
-    if(cfg->cursor_y < 0) cfg->cursor_y = 0;
-    if(cfg->cursor_x < 0){
-        cfg->cursor_x = 0;
     }
     if(cfg->cursor_y >= cfg->current_row-1) cfg->cursor_y = cfg->current_row-1;
     if(cfg->cursor_x >= cfg->rows_stack[cfg->cursor_y]->size) cfg->cursor_x = cfg->rows_stack[cfg->cursor_y]->size-1;
@@ -185,7 +182,7 @@ void editor_popLastCharacter(editor_cfg* cfg){
             row_destroy(edit_row);
             edit_row = NULL;
             if(cfg->current_row != cfg->cursor_y+1){
-                for(int i = cfg->cursor_y; i < cfg->current_row-1; i++){
+                for(size_t i = cfg->cursor_y; i < cfg->current_row-1; i++){
                     cfg->rows_stack[i] = cfg->rows_stack[i+1];
                 } // we modify the other rolls position
             }
@@ -197,12 +194,15 @@ void editor_popLastCharacter(editor_cfg* cfg){
     else{ // else we just pop the character of cursor on line
         int deleted_char = isspace(edit_row->characters[cfg->cursor_x-1]);
         row_remove(edit_row, cfg->cursor_x);
-        cfg->cursor_x--;
-        int new_char = isspace(edit_row->characters[cfg->cursor_x-1]);
-        if(new_char && deleted_char) editor_popLastCharacter(cfg);
+        if(cfg->cursor_x > 0){
+            cfg->cursor_x--;
+            if(cfg->cursor_x > 0){
+                int new_char = isspace(edit_row->characters[cfg->cursor_x-1]);
+                if(new_char && deleted_char) editor_popLastCharacter(cfg);
+            }
+        }
         // if the deleted character is an space, we call it again to delete another space
         // i use this so I can delete tabs faster
-        if(cfg->cursor_x < 0) cfg->cursor_x = 0;
     }
 }
 

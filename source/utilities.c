@@ -8,7 +8,7 @@
 
 void editor_saveAsFile(const editor_cfg* cfg, const char* filename){
     FILE* file = fopen(filename, "w");
-    for(int i = 0; i < cfg->current_row; i++){
+    for(size_t i = 0; i < cfg->current_row; i++){
         fprintf(file, "%s\n", cfg->rows_stack[i]->characters);
     }
     fclose(file);
@@ -55,15 +55,22 @@ void util_printSyntaxC(const char* row_str, const int cursor_x, const int cursor
     const char* cyan_words[] = {
         "printf", "scanf", "main"
     };
-    for(int i = 0; i < (int)strlen(row_str); i++){
+    for(size_t i = 0; i < strlen(row_str); i++){
+        if(row_str[i] == '#'){
+            while(i < strlen(row_str)){
+                color_cell[i] = 3;
+                i++;
+            }
+            break;
+        }
         strncat(token, &row_str[i], 1);
         if(row_str[i] == '+' || row_str[i] == '-' || row_str[i] == '/' || row_str[i] == '*' ||
-        row_str[i] == '>' || row_str[i] == '<' || row_str[i] == '|' || row_str[i] == '&'){
+        row_str[i] == '>' || row_str[i] == '<' || row_str[i] == '|' || row_str[i] == '&' || row_str[i] == '='){
             color_cell[i] = 4;
         }
         for(int j = 0; j < 10; j++){
             if(!strcmp(token, blue_words[j])){
-                for(int k = i-strlen(blue_words[j])+1; k < i; k++){
+                for(size_t k = i-strlen(blue_words[j])+1; k < i; k++){
                     color_cell[k] = 5;
                 }
                 token[0] = '\0';
@@ -71,7 +78,7 @@ void util_printSyntaxC(const char* row_str, const int cursor_x, const int cursor
         }
         for(int j = 0; j < 3; j++){
             if(!strcmp(token, cyan_words[j])){
-                for(int k = i-strlen(cyan_words[j])+1; k <= i; k++){
+                for(size_t k = i-strlen(cyan_words[j])+1; k <= i; k++){
                     color_cell[k] = 2;
                 }
                 token[0] = '\0';
@@ -79,7 +86,7 @@ void util_printSyntaxC(const char* row_str, const int cursor_x, const int cursor
         }
         for(int j = 0; j < 4; j++){
             if(!strcmp(token, green_words[j])){
-                for(int k = i-strlen(green_words[j])+1; k <= i; k++){
+                for(size_t k = i-strlen(green_words[j])+1; k <= i; k++){
                     color_cell[k] = 3;
                 }
                 token[0] = '\0';
@@ -87,7 +94,7 @@ void util_printSyntaxC(const char* row_str, const int cursor_x, const int cursor
         }
         for(int j = 0; j < 6; j++){
             if(!strcmp(token, red_words[j])){
-                for(int k = i-strlen(red_words[j])+1; k <= i; k++){
+                for(size_t k = i-strlen(red_words[j])+1; k <= i; k++){
                     color_cell[k] = 4;
                 }
                 token[0] = '\0';
@@ -97,7 +104,7 @@ void util_printSyntaxC(const char* row_str, const int cursor_x, const int cursor
             do{
                 color_cell[i] = 3;
                 i++;
-            } while(row_str[i] != 34 && i < (int)strlen(row_str));
+            } while(row_str[i] != 34 && i < strlen(row_str));
             color_cell[i] = 3;
         }
         if(row_str[i] == ' ' || row_str[i] == ';' || row_str[i] == '(' || row_str[i] == ')' || row_str[i] == '{' || row_str[i] == '}'){

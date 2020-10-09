@@ -19,7 +19,7 @@ $(BUILD_DIR)/$(TARGET_EXEC): $(OBJS)
 # c source
 $(BUILD_DIR)/%.c.o: %.c
 	$(MKDIR_P) $(dir $@)
-	$(CC) -c $< -o $@ -O3 -Wall -Werror
+	$(CC) -c $< -o $@ -O3 -Wall -Wextra -Werror
 
 .PHONY: clean
 
