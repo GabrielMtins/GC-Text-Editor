@@ -47,7 +47,7 @@ void row_remove(row* current_row, const size_t char_pos){
 }
 
 void row_pop(row* current_row){
-    if(current_row->size == 3) return;
+    if(current_row->size == 1) return;
     current_row->characters[current_row->size-2] = '\0';
     current_row->size--;
 }
