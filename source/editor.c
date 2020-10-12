@@ -186,11 +186,11 @@ void editor_popLastCharacter(editor_cfg* cfg){
     if(edit_row->size == 1){ // if the size is equal one, we just destroy the current line
         if(cfg->cursor_y > 0){ // we cant destroy the first line
             row_destroy(edit_row);
-            cfg->rows_stack[cfg->cursor_y] = NULL;
             if(cfg->current_row != cfg->cursor_y+1){
                 for(size_t i = cfg->cursor_y; i < cfg->current_row-1; i++){
                     cfg->rows_stack[i] = cfg->rows_stack[i+1];
                 } // we modify the other rolls position
+                cfg->rows_stack[cfg->current_row-1] = NULL;
             }
             if(cfg->cursor_y == cfg->current_row-1) cfg->cursor_x = cfg->rows_stack[cfg->cursor_y-1]->size;
             cfg->current_row--;

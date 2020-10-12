@@ -14,12 +14,12 @@ INC_FLAGS := $(addprefix -I,$(INC_DIRS))
 CFLAGS := -Wall -lcurses
 
 $(BUILD_DIR)/$(TARGET_EXEC): $(OBJS)
-	$(CC) $(OBJS) $(CFLAGS) -o $(TARGET_EXEC)
+	$(CC) $(OBJS) $(CFLAGS) -o $(TARGET_EXEC) -O2
 
 # c source
 $(BUILD_DIR)/%.c.o: %.c
 	$(MKDIR_P) $(dir $@)
-	$(CC) -c $< -o $@ -O3 -Wall -Wextra -Werror
+	$(CC) -c $< -o $@ -O2 -Wall -Wextra -Werror
 
 .PHONY: clean
 
