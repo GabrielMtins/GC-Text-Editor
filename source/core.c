@@ -15,6 +15,7 @@ void core_init(int argc, char** argv){
     start_color();
     noecho();
     int canAddColors = 0;
+    // if the terminal have more then 16 colors, we use the brighter ones
     if(COLORS >= 16 && can_change_color()) canAddColors = 8;
     init_pair(TEXT_DEFAULT_COLOR, COLOR_WHITE+canAddColors, COLOR_BLACK);
     init_pair(2, COLOR_CYAN+canAddColors, COLOR_BLACK);

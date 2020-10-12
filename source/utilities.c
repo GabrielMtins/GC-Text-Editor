@@ -17,9 +17,10 @@ void editor_saveAsFile(const editor_cfg* cfg, const char* filename){
 void editor_loadFile(editor_cfg* cfg, const char* filename){
     FILE* file = fopen(filename, "r");
     if(file == NULL) return;
-    while(!feof(file)){
-        char current_char;
-        fscanf(file, "%c", &current_char);
+    editor_cleanLines(cfg);
+    editor_addRow(cfg);
+    char current_char = 'x';
+    while(fscanf(file, "%c", &current_char) == 1){
         if(current_char != '\n'){
             editor_input(cfg, current_char);
         }
@@ -42,8 +43,8 @@ static size_t util_isTokenOnTheList(const char* token, const char* list[], const
     return 0;
 }
 
-static void util_changeColorOnCells(uint8_t* color_cell, const uint8_t color, const size_t end_cell, const size_t num_bytes){
-    for(size_t i = end_cell-1; i >= end_cell-num_bytes; i--){
+static void util_changeColorOnCells(uint8_t* color_cell, const uint8_t color, const size_t start_cell, const size_t num_bytes){
+    for(size_t i = start_cell; i < start_cell+num_bytes; i++){
         color_cell[i] = color;
     }
 }
@@ -80,20 +81,23 @@ void util_printSyntaxC(const char* row_str, const int cursor_x, const int cursor
             color_cell[i] = 4;
         }
         size_t isTokenBlue = util_isTokenOnTheList(token, blue_words, 10);
-        if(isTokenBlue){
-            util_changeColorOnCells(color_cell, 5, i, strlen(blue_words[isTokenBlue-1])-1);
+        if(isTokenBlue != 0){
+            size_t size_wrd = strlen(blue_words[isTokenBlue-1]);
+            util_changeColorOnCells(color_cell, 5, i+1-size_wrd, size_wrd-1);
             token[0] = '\0';
             continue;
         }
         size_t isTokenCyan = util_isTokenOnTheList(token, cyan_words, 3);
-        if(isTokenCyan){
-            util_changeColorOnCells(color_cell, 2, i+1, strlen(cyan_words[isTokenCyan-1]));
+        if(isTokenCyan != 0){
+            size_t size_wrd = strlen(cyan_words[isTokenCyan-1]);
+            util_changeColorOnCells(color_cell, 2, i+1-size_wrd, size_wrd);
             token[0] = '\0';
             continue;
         }
         size_t isTokenRed = util_isTokenOnTheList(token, red_words, 6);
-        if(isTokenRed){
-            util_changeColorOnCells(color_cell, 4, i+1, strlen(red_words[isTokenRed-1]));
+        if(isTokenRed != 0){
+            size_t size_wrd = strlen(red_words[isTokenRed-1]);
+            util_changeColorOnCells(color_cell, 4, i+1-size_wrd, size_wrd);
             token[0] = '\0';
             continue;
         }
