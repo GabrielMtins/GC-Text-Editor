@@ -11,14 +11,17 @@ editor_cfg* mainEditor = NULL;
 void core_init(int argc, char** argv){
     initscr();
     keypad(stdscr, TRUE);
-    start_color();
     use_default_colors();
-    init_pair(TEXT_DEFAULT_COLOR, COLOR_WHITE+8, COLOR_BLACK);
-    init_pair(2, COLOR_CYAN+8, COLOR_BLACK);
-    init_pair(3, COLOR_GREEN+8, COLOR_BLACK);
-    init_pair(4, COLOR_MAGENTA+8, COLOR_BLACK);
-    init_pair(5, COLOR_BLUE+8, COLOR_BLACK);
-    init_pair(6, COLOR_YELLOW+8, COLOR_BLACK);
+    start_color();
+    noecho();
+    int canAddColors = 0;
+    if(COLORS >= 16 && can_change_color()) canAddColors = 8;
+    init_pair(TEXT_DEFAULT_COLOR, COLOR_WHITE+canAddColors, COLOR_BLACK);
+    init_pair(2, COLOR_CYAN+canAddColors, COLOR_BLACK);
+    init_pair(3, COLOR_GREEN+canAddColors, COLOR_BLACK);
+    init_pair(4, COLOR_MAGENTA+canAddColors, COLOR_BLACK);
+    init_pair(5, COLOR_BLUE+canAddColors, COLOR_BLACK);
+    init_pair(6, COLOR_YELLOW+canAddColors, COLOR_BLACK);
     init_pair(7, COLOR_MAGENTA, COLOR_BLACK);
     attron(COLOR_PAIR(1));
     curs_set(1);
@@ -42,7 +45,7 @@ void core_input(){
 }
 
 void core_loop(){
-    while(1){
+    while(!mainEditor->quit){
         clear();
         editor_draw(mainEditor);
         refresh();
@@ -51,6 +54,7 @@ void core_loop(){
 }
 
 void core_quit(){
+    editor_destroy(mainEditor);
     endwin();
 }
 

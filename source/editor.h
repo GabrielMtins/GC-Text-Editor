@@ -33,9 +33,12 @@ typedef struct{
     size_t current_row;
     row* command_row;
     int mode;
+    int quit;
 } editor_cfg;
 
 editor_cfg* editor_create();
+
+void editor_destroy(editor_cfg* cfg);
 
 void editor_addRow(editor_cfg* cfg);
 
