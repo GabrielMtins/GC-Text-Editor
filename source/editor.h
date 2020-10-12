@@ -38,6 +38,8 @@ typedef struct{
 
 editor_cfg* editor_create();
 
+void editor_cleanLines(editor_cfg* cfg);
+
 void editor_destroy(editor_cfg* cfg);
 
 void editor_addRow(editor_cfg* cfg);

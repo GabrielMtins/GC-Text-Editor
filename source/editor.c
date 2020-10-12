@@ -67,12 +67,18 @@ editor_cfg* editor_create(){
     return cfg;
 }
 
-void editor_destroy(editor_cfg* cfg){
+void editor_cleanLines(editor_cfg* cfg){
     if(cfg == NULL) return;
     for(int i = 0; i < MAX_ROWS; i++){
         if(cfg->rows_stack[i] == NULL) continue;
         row_destroy(cfg->rows_stack[i]);
+        cfg->rows_stack[i] = NULL;
     }
+    cfg->current_row = 0;
+}
+
+void editor_destroy(editor_cfg* cfg){
+    editor_cleanLines(cfg);
     row_destroy(cfg->command_row);
     free(cfg);
 }
@@ -80,7 +86,7 @@ void editor_destroy(editor_cfg* cfg){
 void editor_addRow(editor_cfg* cfg){
     cfg->current_row++;
     cfg->cursor_y++;
-    if(cfg->current_row == 1){ // if size is equal 1, we just push the first row
+    if(cfg->current_row <= 1){ // if size is equal 1, we just push the first row
         cfg->cursor_x = 0;
         cfg->rows_stack[0] = row_create();
     }
@@ -186,6 +192,7 @@ void editor_popLastCharacter(editor_cfg* cfg){
     if(edit_row->size == 1){ // if the size is equal one, we just destroy the current line
         if(cfg->cursor_y > 0){ // we cant destroy the first line
             row_destroy(edit_row);
+            cfg->rows_stack[cfg->cursor_y] = NULL;
             if(cfg->current_row != cfg->cursor_y+1){
                 for(size_t i = cfg->cursor_y; i < cfg->current_row-1; i++){
                     cfg->rows_stack[i] = cfg->rows_stack[i+1];
