@@ -60,10 +60,21 @@ editor_cfg* editor_create(){
     editor_cfg* cfg = malloc(sizeof(editor_cfg));
     cfg->current_row = 0;
     cfg->mode = TEXT_MODE;
+    for(size_t i = 0; i < MAX_ROWS; i++) cfg->rows_stack[i] = NULL;
     cfg->command_row = row_create();
     editor_addRow(cfg);
     cfg->cursor_x = 0; cfg->cursor_y = 0;
     return cfg;
+}
+
+void editor_destroy(editor_cfg* cfg){
+    if(cfg == NULL) return;
+    for(int i = 0; i < MAX_ROWS; i++){
+        if(cfg->rows_stack[i] == NULL) continue;
+        row_destroy(cfg->rows_stack[i]);
+    }
+    row_destroy(cfg->command_row);
+    free(cfg);
 }
 
 void editor_addRow(editor_cfg* cfg){
@@ -212,6 +223,9 @@ void editor_processCommand(editor_cfg* cfg){
         strncpy(load_file, cfg->command_row->characters+3, cfg->command_row->size-3); // cpy the final bytes
         cfg->mode = TEXT_MODE;
         editor_loadFile(cfg, load_file); // save file
+    }
+    if(!strncmp(cfg->command_row->characters, "qt", 1)){ // cmp to first 2 bytes
+        cfg->quit = 1;
     }
     cfg->mode = TEXT_MODE;
 }
