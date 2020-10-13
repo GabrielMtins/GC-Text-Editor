@@ -15,14 +15,14 @@ row* row_create(){
     return new_row;
 }
 
-void row_addCharacter(row* current_row, const char push_character){
+void row_addCharacter(row* current_row, char push_character){
     if(current_row == NULL) return;
     current_row->size++;
     current_row->characters[current_row->size-1] = '\0';
     current_row->characters[current_row->size-2] = push_character;
 }
 
-void row_insertCharacter(row* current_row, const char push_character, const size_t position){
+void row_insertCharacter(row* current_row, char push_character, size_t position){
     if(position >= current_row->size-1){
         row_addCharacter(current_row, push_character);
         return;
@@ -34,7 +34,7 @@ void row_insertCharacter(row* current_row, const char push_character, const size
     current_row->characters[position] = push_character;
 }
 
-void row_remove(row* current_row, const size_t char_pos){
+void row_remove(row* current_row, size_t char_pos){
     if(current_row == NULL) return;
     if(current_row->size == 1) return;
     size_t new_pos = char_pos;
@@ -131,7 +131,7 @@ void editor_addRow(editor_cfg* cfg){
     }
 }
 
-void editor_controlCursor(editor_cfg* cfg, const int key){
+void editor_controlCursor(editor_cfg* cfg, int key){
     switch(key){
         case KEY_LEFT:
         if(cfg->cursor_x > 0) cfg->cursor_x--;
@@ -157,7 +157,7 @@ void editor_controlCursor(editor_cfg* cfg, const int key){
     if(cfg->cursor_x >= cfg->rows_stack[cfg->cursor_y]->size) cfg->cursor_x = cfg->rows_stack[cfg->cursor_y]->size-1;
 }
 
-void editor_input(editor_cfg* cfg, const int character_push){
+void editor_input(editor_cfg* cfg, int character_push){
     editor_controlCursor(cfg, character_push);
     switch(cfg->mode){
         case CMD_MODE:

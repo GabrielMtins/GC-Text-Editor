@@ -35,7 +35,7 @@ void editor_loadFile(editor_cfg* cfg, const char* filename){
     fclose(file);
 }
 
-static size_t util_isTokenOnTheList(const char* token, const char* list[], const size_t list_size){
+static size_t util_isTokenOnTheList(const char* token, const char* list[], size_t list_size){
     if(token == NULL || list_size == 0) return 0;
     for(size_t i = 0; i < list_size; i++){
         if(!strcmp(token, list[i])) return i+1;
@@ -43,13 +43,13 @@ static size_t util_isTokenOnTheList(const char* token, const char* list[], const
     return 0;
 }
 
-static void util_changeColorOnCells(uint8_t* color_cell, const uint8_t color, const size_t start_cell, const size_t num_bytes){
+static void util_changeColorOnCells(uint8_t* color_cell, uint8_t color, size_t start_cell, size_t num_bytes){
     for(size_t i = start_cell; i < start_cell+num_bytes; i++){
         color_cell[i] = color;
     }
 }
 
-void util_printSyntaxC(const char* row_str, const int cursor_x, const int cursor_y, const int x_max){
+void util_printSyntaxC(const char* row_str, int cursor_x, int cursor_y, int x_max){
     if(cursor_x < 0 || cursor_y < 0) return;
     move(cursor_y, cursor_x);
     char token[256] = "";
@@ -101,11 +101,11 @@ void util_printSyntaxC(const char* row_str, const int cursor_x, const int cursor
             token[0] = '\0';
             continue;
         }
-        if(row_str[i] == 34){
+        if(row_str[i] == '\"'){
             do{
                 color_cell[i] = 3;
                 i++;
-            } while(row_str[i] != 34 && i < strlen(row_str));
+            } while(row_str[i] != '\"' && i < strlen(row_str));
             color_cell[i] = 3;
         }
         if(row_str[i] == ' ' || row_str[i] == ';' || row_str[i] == '(' || row_str[i] == ')' || row_str[i] == '{' || row_str[i] == '}'){

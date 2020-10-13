@@ -11,11 +11,11 @@ typedef struct{
 
 row* row_create();
 
-void row_addCharacter(row* current_row, const char push_character);
+void row_addCharacter(row* current_row, char push_character);
 
-void row_insertCharacter(row* current_row, const char push_character, const size_t position);
+void row_insertCharacter(row* current_row, char push_character, size_t position);
 
-void row_remove(row* current_row, const size_t char_pos);
+void row_remove(row* current_row, size_t char_pos);
 
 void row_pop(row* current_row);
 
@@ -44,9 +44,9 @@ void editor_destroy(editor_cfg* cfg);
 
 void editor_addRow(editor_cfg* cfg);
 
-void editor_controlCursor(editor_cfg* cfg, const int key);
+void editor_controlCursor(editor_cfg* cfg, int key);
 
-void editor_input(editor_cfg* cfg, const int character_push);
+void editor_input(editor_cfg* cfg, int character_push);
 
 void editor_popLastCharacter(editor_cfg* cfg);
 
