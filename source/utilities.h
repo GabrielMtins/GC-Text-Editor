@@ -9,6 +9,6 @@ void editor_saveAsFile(const editor_cfg* cfg, const char* filename);
 
 void editor_loadFile(editor_cfg* cfg, const char* filename);
 
-void util_printSyntaxC(const char* row_str, const int cursor_x, const int cursor_y, const int x_max);
+void util_printSyntaxC(const char* row_str, int cursor_x, int cursor_y, int x_max);
 
 #endif

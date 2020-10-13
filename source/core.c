@@ -17,13 +17,13 @@ void core_init(int argc, char** argv){
     int canAddColors = 0;
     // if the terminal have more then 16 colors, we use the brighter ones
     if(COLORS >= 16 && can_change_color()) canAddColors = 8;
-    init_pair(TEXT_DEFAULT_COLOR, COLOR_WHITE+canAddColors, COLOR_BLACK);
-    init_pair(2, COLOR_CYAN+canAddColors, COLOR_BLACK);
-    init_pair(3, COLOR_GREEN+canAddColors, COLOR_BLACK);
-    init_pair(4, COLOR_MAGENTA+canAddColors, COLOR_BLACK);
-    init_pair(5, COLOR_BLUE+canAddColors, COLOR_BLACK);
-    init_pair(6, COLOR_YELLOW+canAddColors, COLOR_BLACK);
-    init_pair(7, COLOR_MAGENTA, COLOR_BLACK);
+    init_pair(TEXT_DEFAULT_COLOR, COLOR_WHITE+canAddColors, -1);
+    init_pair(2, COLOR_CYAN+canAddColors, -1);
+    init_pair(3, COLOR_GREEN+canAddColors, -1);
+    init_pair(4, COLOR_MAGENTA+canAddColors, -1);
+    init_pair(5, COLOR_BLUE+canAddColors, -1);
+    init_pair(6, COLOR_YELLOW+canAddColors, -1);
+    init_pair(7, COLOR_MAGENTA, -1);
     attron(COLOR_PAIR(1));
     curs_set(1);
     mainEditor = editor_create();
