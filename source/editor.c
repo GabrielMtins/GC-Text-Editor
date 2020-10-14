@@ -172,18 +172,27 @@ void editor_popLastCharacter(editor_cfg* cfg){
 }
 
 void editor_processCommand(editor_cfg* cfg){
-    if(!strncmp(cfg->command_row->characters, "sv", 2)){ // cmp to first 2 bytes
-        char save_file[256] = "";
-        strncpy(save_file, cfg->command_row->characters+3, cfg->command_row->size-3); // cpy the final bytes
-        editor_saveAsFile(cfg, save_file); // save file
+    if(!strncmp(cfg->command_row->characters, "w", 1)){ // cmp to first 2 bytes
+        if(cfg->command_row->size == 2){ // save with the default filename
+            editor_saveAsFile(cfg, cfg->current_file); // save file
+        }
+        else{
+            char save_file[256] = "";
+            strncpy(save_file, cfg->command_row->characters+2, cfg->command_row->size-2); // cpy the final bytes
+            editor_saveAsFile(cfg, save_file); // save file
+        }
+        cfg->command_row->characters[0] = '\0';
+        cfg->command_row->size = 0;
     }
-    if(!strncmp(cfg->command_row->characters, "ld", 2)){ // cmp to first 2 bytes
+    if(!strncmp(cfg->command_row->characters, "r", 1)){ // cmp to first 2 bytes
         char load_file[256] = "";
-        strncpy(load_file, cfg->command_row->characters+3, cfg->command_row->size-3); // cpy the final bytes
+        strncpy(load_file, cfg->command_row->characters+2, cfg->command_row->size-2); // cpy the final bytes
         cfg->mode = TEXT_MODE;
         editor_loadFile(cfg, load_file); // save file
+        cfg->command_row->characters[0] = '\0';
+        cfg->command_row->size = 0;
     }
-    if(!strncmp(cfg->command_row->characters, "qt", 2)){ // cmp to first 2 bytes
+    if(!strncmp(cfg->command_row->characters, "q", 1)){ // cmp to first 2 bytes
         cfg->quit = 1;
     }
     cfg->mode = TEXT_MODE;

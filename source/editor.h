@@ -17,6 +17,7 @@ typedef struct{
     row* rows_stack[MAX_ROWS];
     size_t current_row;
     row* command_row;
+    char current_file[256];
     int mode;
     int quit;
 } editor_cfg;
