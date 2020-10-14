@@ -231,7 +231,7 @@ void editor_processCommand(editor_cfg* cfg){
         cfg->mode = TEXT_MODE;
         editor_loadFile(cfg, load_file); // save file
     }
-    if(!strncmp(cfg->command_row->characters, "qt", 1)){ // cmp to first 2 bytes
+    if(!strncmp(cfg->command_row->characters, "qt", 2)){ // cmp to first 2 bytes
         cfg->quit = 1;
     }
     cfg->mode = TEXT_MODE;
