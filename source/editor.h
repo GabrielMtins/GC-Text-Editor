@@ -14,6 +14,7 @@
 
 typedef struct{
     size_t cursor_x, cursor_y;
+    size_t offset_cursor_x, offset_cursor_y;
     row* rows_stack[MAX_ROWS];
     size_t current_row;
     row* command_row;
