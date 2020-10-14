@@ -15,6 +15,7 @@ void editor_saveAsFile(const editor_cfg* cfg, const char* filename){
 }
 
 void editor_loadFile(editor_cfg* cfg, const char* filename){
+    strcpy(cfg->current_file, filename);
     FILE* file = fopen(filename, "r");
     if(file == NULL) return;
     editor_cleanLines(cfg);
