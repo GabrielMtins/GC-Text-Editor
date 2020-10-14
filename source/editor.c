@@ -1,4 +1,5 @@
 #include "editor.h"
+#include "row.h"
 #include "utilities.h"
 
 #include <stdio.h>
@@ -32,7 +33,9 @@ void editor_cleanLines(editor_cfg* cfg){
 void editor_destroy(editor_cfg* cfg){
     editor_cleanLines(cfg);
     row_destroy(cfg->command_row);
+    printf("exited sucadf\n");
     free(cfg);
+
 }
 
 void editor_addRow(editor_cfg* cfg){
@@ -189,7 +192,7 @@ void editor_processCommand(editor_cfg* cfg){
             editor_saveAsFile(cfg, save_file); // save file
         }
         cfg->command_row->characters[0] = '\0';
-        cfg->command_row->size = 0;
+        cfg->command_row->size = 1;
     }
     if(!strncmp(cfg->command_row->characters, "r", 1)){ // cmp to first 2 bytes
         char load_file[256] = "";
@@ -197,7 +200,7 @@ void editor_processCommand(editor_cfg* cfg){
         cfg->mode = TEXT_MODE;
         editor_loadFile(cfg, load_file); // save file
         cfg->command_row->characters[0] = '\0';
-        cfg->command_row->size = 0;
+        cfg->command_row->size = 1;
     }
     if(!strncmp(cfg->command_row->characters, "q", 1)){ // cmp to first 2 bytes
         cfg->quit = 1;
