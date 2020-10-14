@@ -34,7 +34,6 @@ void editor_destroy(editor_cfg* cfg){
     editor_cleanLines(cfg);
     row_destroy(cfg->command_row);
     free(cfg);
-
 }
 
 void editor_addRow(editor_cfg* cfg){
@@ -49,7 +48,7 @@ void editor_addRow(editor_cfg* cfg){
             cfg->rows_stack[i] = cfg->rows_stack[i-1];
         } // we modify the other rolls position
         cfg->rows_stack[cfg->cursor_y] = row_create();
-        if(cfg->cursor_x != cfg->rows_stack[cfg->cursor_y-1]->size-1){
+        if(cfg->cursor_x != cfg->rows_stack[cfg->cursor_y-1]->size-1){ // if the cursor isnt on the end of the row
             char new_line_str[256] = ""; // this is the next line
             int size_to_copy = cfg->rows_stack[cfg->cursor_y-1]->size-cfg->cursor_x-1; // this is how many bytes we need to copy
             char* row_ptr = cfg->rows_stack[cfg->cursor_y-1]->characters; // this is the pointer to the current row
@@ -111,9 +110,11 @@ void editor_controlCursor(editor_cfg* cfg, int key){
         break;
     }
     if(cfg->cursor_y >= cfg->current_row-1) cfg->cursor_y = cfg->current_row-1;
+    // move the offset of the editor in the y axis
     if(cfg->cursor_y >= cfg->offset_cursor_y+y_max) cfg->offset_cursor_y++;
     if(cfg->cursor_y < cfg->offset_cursor_y) cfg->offset_cursor_y--;
     if(cfg->cursor_x >= cfg->rows_stack[cfg->cursor_y]->size) cfg->cursor_x = cfg->rows_stack[cfg->cursor_y]->size-1;
+    // move the offset of the editor in x axis
     if(cfg->cursor_x >= cfg->offset_cursor_x+x_max-4) cfg->offset_cursor_x++;
     if(cfg->cursor_x < cfg->offset_cursor_x) cfg->offset_cursor_x--;
 }
@@ -156,11 +157,13 @@ void editor_popLastCharacter(editor_cfg* cfg){
             cfg->rows_stack[cfg->cursor_y] = NULL;
             if(cfg->current_row != cfg->cursor_y+1){
                 for(size_t i = cfg->cursor_y; i < cfg->current_row-1; i++){
+                    // we copy the next roll to the current
                     cfg->rows_stack[i] = cfg->rows_stack[i+1];
-                } // we modify the other rolls position
+                }
                 cfg->rows_stack[cfg->current_row-1] = NULL;
             }
             if(cfg->cursor_y == cfg->current_row-1) cfg->cursor_x = cfg->rows_stack[cfg->cursor_y-1]->size;
+            // just change the cursor to the end of the current row
             cfg->current_row--;
             cfg->cursor_y--;
         }
@@ -172,11 +175,11 @@ void editor_popLastCharacter(editor_cfg* cfg){
             cfg->cursor_x--;
             if(cfg->cursor_x > 0){
                 int new_char = isspace(edit_row->characters[cfg->cursor_x-1]);
+                // if both characters are space, we just deleted it until there is no space left
+                // i use this so I can delete tabs faster
                 if(new_char && deleted_char) editor_popLastCharacter(cfg);
             }
         }
-        // if the deleted character is an space, we call it again to delete another space
-        // i use this so I can delete tabs faster
     }
 }
 
@@ -226,7 +229,11 @@ void editor_draw(const editor_cfg* cfg){
         util_printSyntaxC(cfg->rows_stack[line_number-1]->characters, 4, i, x_max-4, cfg->offset_cursor_x);
     }
     { // draw commands
-        attron(COLOR_PAIR(1));
+        attron(COLOR_PAIR(8));
+        move(y_max, 0);
+        for(int i = 0; i < x_max+1; i++){
+            addch(' ');
+        }
         move(y_max, 0);
         addch('?');
         move(y_max, 2);
