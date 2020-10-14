@@ -33,7 +33,6 @@ void editor_cleanLines(editor_cfg* cfg){
 void editor_destroy(editor_cfg* cfg){
     editor_cleanLines(cfg);
     row_destroy(cfg->command_row);
-    printf("exited sucadf\n");
     free(cfg);
 
 }
