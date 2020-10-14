@@ -15,7 +15,7 @@ editor_cfg* editor_create(){
     for(size_t i = 0; i < MAX_ROWS; i++) cfg->rows_stack[i] = NULL;
     cfg->command_row = row_create();
     editor_addRow(cfg);
-    cfg->cursor_x = 0; cfg->cursor_y = 0;
+    cfg->cursor_x = cfg->cursor_y = cfg->offset_cursor_y = cfg->offset_cursor_x = 0;
     return cfg;
 }
 
@@ -84,6 +84,9 @@ void editor_addRow(editor_cfg* cfg){
 }
 
 void editor_controlCursor(editor_cfg* cfg, int key){
+    int x_max = 0, y_max = 0;
+    getmaxyx(stdscr, y_max, x_max);
+    x_max--; y_max--;
     switch(key){
         case KEY_LEFT:
         if(cfg->cursor_x > 0) cfg->cursor_x--;
@@ -106,7 +109,11 @@ void editor_controlCursor(editor_cfg* cfg, int key){
         break;
     }
     if(cfg->cursor_y >= cfg->current_row-1) cfg->cursor_y = cfg->current_row-1;
+    if(cfg->cursor_y >= cfg->offset_cursor_y+y_max) cfg->offset_cursor_y++;
+    if(cfg->cursor_y < cfg->offset_cursor_y) cfg->offset_cursor_y--;
     if(cfg->cursor_x >= cfg->rows_stack[cfg->cursor_y]->size) cfg->cursor_x = cfg->rows_stack[cfg->cursor_y]->size-1;
+    if(cfg->cursor_x >= cfg->offset_cursor_x+x_max-4) cfg->offset_cursor_x++;
+    if(cfg->cursor_x < cfg->offset_cursor_x) cfg->offset_cursor_x--;
 }
 
 void editor_input(editor_cfg* cfg, int character_push){
@@ -200,25 +207,21 @@ void editor_processCommand(editor_cfg* cfg){
 
 void editor_draw(const editor_cfg* cfg){
     attron(COLOR_PAIR(1));
-    int y_max = 0;
-    int x_max = 0;
-    getmaxyx(stdscr, y_max, x_max);
+    int y_max = 0, x_max = 0;
+    getmaxyx(stdscr, y_max, x_max); // get size of the window
     y_max--;
     x_max--;
-    int offset_lines = cfg->cursor_y+1-y_max;
-    if(offset_lines<0) offset_lines = 0;
     int min_lines = cfg->current_row;
     if(min_lines > y_max) min_lines = y_max;// the minimum number of lines to print
     for(int i = 0; i < min_lines; i++){
-        char str_num[256] = "";
-        sprintf(str_num, "%i", i+1+offset_lines); // convert the number to a string
+        int line_number = i+1+cfg->offset_cursor_y;
         int move_by = 0; // i need this for the numbers be aligned
-        if(i+offset_lines+1 < 10) move_by = 2;
-        else if(i+offset_lines+1 < 100) move_by = 1;
+        if(line_number < 10) move_by = 2;
+        else if(line_number < 100) move_by = 1;
         attron(COLOR_PAIR(7)); // set color to magenta
         move(i, move_by);
-        printw(str_num); // print the number of the line
-        util_printSyntaxC(cfg->rows_stack[i+offset_lines]->characters, 4, i, x_max-4);
+        printw("%i", line_number); // print the number of the line
+        util_printSyntaxC(cfg->rows_stack[line_number-1]->characters, 4, i, x_max-4, cfg->offset_cursor_x);
     }
     { // draw commands
         attron(COLOR_PAIR(1));
@@ -228,9 +231,7 @@ void editor_draw(const editor_cfg* cfg){
         printw(cfg->command_row->characters);
     }
     { // draw cursor
-        int offset_cursor_x = 0;
-        if(cfg->cursor_y+1 > 9) offset_cursor_x++;
-        if(cfg->mode != CMD_MODE) move(cfg->cursor_y-offset_lines, cfg->cursor_x+4);
+        if(cfg->mode != CMD_MODE) move(cfg->cursor_y-cfg->offset_cursor_y, cfg->cursor_x+4-cfg->offset_cursor_x);
         else move(y_max, cfg->command_row->size+1);
     }
 }

@@ -33,6 +33,8 @@ void editor_loadFile(editor_cfg* cfg, const char* filename){
     }
     cfg->cursor_x = 0;
     cfg->cursor_y = 0;
+    cfg->offset_cursor_x = 0;
+    cfg->offset_cursor_y = 0;
     fclose(file);
 }
 
@@ -50,7 +52,7 @@ static void util_changeColorOnCells(uint8_t* color_cell, uint8_t color, size_t s
     }
 }
 
-void util_printSyntaxC(const char* row_str, int cursor_x, int cursor_y, int x_max){
+void util_printSyntaxC(const char* row_str, int cursor_x, int cursor_y, int x_max, int offset_x){
     if(cursor_x < 0 || cursor_y < 0) return;
     move(cursor_y, cursor_x);
     char token[256] = "";
@@ -119,12 +121,13 @@ void util_printSyntaxC(const char* row_str, int cursor_x, int cursor_y, int x_ma
     int size_of_array = strlen(row_str);
     if(size_of_array > x_max) size_of_array = x_max;
     for(int i = 0; i < size_of_array; i++){
-        attron(COLOR_PAIR(color_cell[i]));
-        if(row_str[i] == '%'){
+        if(row_str[i+offset_x] == '\0') break;
+        attron(COLOR_PAIR(color_cell[i+offset_x]));
+        if(row_str[i+offset_x] == '%'){
             printw("%%");
         }
         else{
-            addch(row_str[i]);
+            addch(row_str[i+offset_x]);
         }
     }
     attron(COLOR_PAIR(1));
