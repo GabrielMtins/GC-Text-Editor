@@ -12,6 +12,8 @@ make
 
 ## Commands
 
+To enter command mode, press ESC and type one of these commands:  
+
 ```
     j <line> - jump to a line
     r <file> - read a file
