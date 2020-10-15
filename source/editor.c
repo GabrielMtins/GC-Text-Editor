@@ -194,16 +194,12 @@ void editor_processCommand(editor_cfg* cfg){
             strncpy(save_file, cfg->command_row->characters+2, cfg->command_row->size-2); // cpy the final bytes
             editor_saveAsFile(cfg, save_file); // save file
         }
-        cfg->command_row->characters[0] = '\0';
-        cfg->command_row->size = 1;
     }
     if(!strncmp(cfg->command_row->characters, "r", 1)){ // cmp to first 1 bytes
         char load_file[256] = "";
         strncpy(load_file, cfg->command_row->characters+2, cfg->command_row->size-2); // cpy the final bytes
         cfg->mode = TEXT_MODE;
         editor_loadFile(cfg, load_file); // save file
-        cfg->command_row->characters[0] = '\0';
-        cfg->command_row->size = 1;
     }
     if(!strncmp(cfg->command_row->characters, "q", 1)){ // cmp to first 1 bytes
         cfg->quit = 1;
@@ -215,6 +211,8 @@ void editor_processCommand(editor_cfg* cfg){
         sscanf(line_to_jump_str, "%lu", &line_to_jump);
         cfg->cursor_y = line_to_jump-1;
     }
+    cfg->command_row->characters[0] = '\0';
+    cfg->command_row->size = 1;
     cfg->mode = TEXT_MODE;
 }
 
