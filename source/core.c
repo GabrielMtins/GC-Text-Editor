@@ -24,7 +24,8 @@ void core_init(int argc, char** argv){
     init_pair(5, COLOR_BLUE+canAddColors, -1);
     init_pair(6, COLOR_YELLOW+canAddColors, -1);
     init_pair(7, COLOR_MAGENTA, -1);
-    init_pair(8, COLOR_BLACK, COLOR_WHITE);
+    init_pair(8, COLOR_WHITE, -1);
+    init_pair(9, COLOR_BLACK, COLOR_WHITE);
     attron(COLOR_PAIR(1));
     curs_set(1);
     mainEditor = editor_create();
@@ -38,7 +39,6 @@ void core_input(){
     switch(ch){
         case 27: // esc key
         mainEditor->mode = !mainEditor->mode;
-        break;
         break;
         default:
         editor_input(mainEditor, ch);

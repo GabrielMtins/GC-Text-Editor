@@ -31,6 +31,7 @@ void editor_loadFile(editor_cfg* cfg, const char* filename){
             cfg->rows_stack[cfg->current_row-1]->size = 1;
         }
     }
+    editor_popLastCharacter(cfg);
     cfg->cursor_x = 0;
     cfg->cursor_y = 0;
     cfg->offset_cursor_x = 0;
@@ -63,12 +64,16 @@ void util_printSyntaxC(const char* row_str, int cursor_x, int cursor_y, int x_ma
     const char* blue_words[] = {
         "int ", "char ", "double ", "float ", "void ",
         "int*", "char*", "double*", "float*", "void*",
+        "size_t ", "uint8_t ", "uint16_t", "uint32_t ",
+        "size_t*", "uint8_t*", "uint16_t*", "uint32_t*",
+        "unsigned"
     };
     const char* red_words[] = {
-        "return", "for", "while", "const", "if", "else"
+        "return", "for", "while", "const", "if", "else",
+        "typedef", "struct", "case", "break", "default"
     };
-    const char* cyan_words[] = {
-        "printf", "scanf", "main"
+    const char* yellow_words[] = {
+        "NULL"
     };
     for(size_t i = 0; i < strlen(row_str); i++){
         if(row_str[i] == '#'){
@@ -79,30 +84,36 @@ void util_printSyntaxC(const char* row_str, int cursor_x, int cursor_y, int x_ma
             break;
         }
         strncat(token, &row_str[i], 1);
-        if(row_str[i] == '+' || row_str[i] == '-' || row_str[i] == '/' || row_str[i] == '*' ||
+        if(row_str[i] == '+' || row_str[i] == '-' || row_str[i] == '/' || row_str[i] == '*' || row_str[i] == '!' ||
         row_str[i] == '>' || row_str[i] == '<' || row_str[i] == '|' || row_str[i] == '&' || row_str[i] == '='){
             color_cell[i] = 4;
         }
-        size_t isTokenBlue = util_isTokenOnTheList(token, blue_words, 10);
+        size_t isTokenBlue = util_isTokenOnTheList(token, blue_words, 19);
         if(isTokenBlue != 0){
             size_t size_wrd = strlen(blue_words[isTokenBlue-1]);
             util_changeColorOnCells(color_cell, 5, i+1-size_wrd, size_wrd-1);
             token[0] = '\0';
             continue;
         }
-        size_t isTokenCyan = util_isTokenOnTheList(token, cyan_words, 3);
-        if(isTokenCyan != 0){
-            size_t size_wrd = strlen(cyan_words[isTokenCyan-1]);
-            util_changeColorOnCells(color_cell, 2, i+1-size_wrd, size_wrd);
-            token[0] = '\0';
-            continue;
-        }
-        size_t isTokenRed = util_isTokenOnTheList(token, red_words, 6);
+        size_t isTokenRed = util_isTokenOnTheList(token, red_words, 11);
         if(isTokenRed != 0){
             size_t size_wrd = strlen(red_words[isTokenRed-1]);
             util_changeColorOnCells(color_cell, 4, i+1-size_wrd, size_wrd);
             token[0] = '\0';
             continue;
+        }
+        size_t isTokenYellow = util_isTokenOnTheList(token, yellow_words, 8);
+        if(isTokenYellow != 0){
+            size_t size_wrd = strlen(yellow_words[isTokenYellow-1]);
+            util_changeColorOnCells(color_cell, 6, i+1-size_wrd, size_wrd);
+            token[0] = '\0';
+            continue;
+        }
+        if(i < strlen(row_str)-1 && row_str[i] == '/' && row_str[i+1] == '/'){
+            while(i < strlen(row_str)){
+                color_cell[i] = 8;
+                i++;
+            }
         }
         if(row_str[i] == '\"'){
             do{
@@ -111,7 +122,13 @@ void util_printSyntaxC(const char* row_str, int cursor_x, int cursor_y, int x_ma
             } while(row_str[i] != '\"' && i < strlen(row_str));
             color_cell[i] = 3;
         }
-        if(row_str[i] == ' ' || row_str[i] == ';' || row_str[i] == '(' || row_str[i] == ')' || row_str[i] == '{' || row_str[i] == '}'){
+        if(row_str[i] == ' ' || row_str[i] == ';' || row_str[i] == '{' || row_str[i] == '}'){
+            token[0] = '\0';
+        }
+        if(row_str[i] == '('){ // detect functions
+            for(int j = i-1; row_str[j] != ' '; j--){
+                if(color_cell[j] == 1) color_cell[j] = 2;
+            }
             token[0] = '\0';
         }
         if(row_str[i] >= '0' && row_str[i] <= '9'){
