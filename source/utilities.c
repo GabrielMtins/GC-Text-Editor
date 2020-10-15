@@ -128,8 +128,8 @@ void util_printSyntaxC(const char* row_str, int cursor_x, int cursor_y, int x_ma
             token[0] = '\0';
         }
         if(row_str[i] == '('){ // detect functions
-            for(int j = i-1; row_str[j] != ' '; j--){
-                if(color_cell[j] == 1) color_cell[j] = 2;
+            for(int j = i-1; row_str[j] != ' ' && color_cell[j] == 1; j--){
+                color_cell[j] = 2;
             }
             token[0] = '\0';
         }
