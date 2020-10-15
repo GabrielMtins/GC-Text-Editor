@@ -112,11 +112,11 @@ void editor_controlCursor(editor_cfg* cfg, int key){
     if(cfg->cursor_y >= cfg->current_row-1) cfg->cursor_y = cfg->current_row-1;
     if(cfg->cursor_x >= cfg->rows_stack[cfg->cursor_y]->size) cfg->cursor_x = cfg->rows_stack[cfg->cursor_y]->size-1;
     // move the offset of the editor in the y axis
-    if(cfg->cursor_y >= cfg->offset_cursor_y+y_max) cfg->offset_cursor_y++;
-    if(cfg->cursor_y < cfg->offset_cursor_y) cfg->offset_cursor_y--;
+    if(cfg->cursor_y >= cfg->offset_cursor_y+y_max) cfg->offset_cursor_y = cfg->cursor_y-y_max+1;
+    if(cfg->cursor_y < cfg->offset_cursor_y) cfg->offset_cursor_y = cfg->cursor_y;
     // move the offset of the editor in x axis
-    if(cfg->cursor_x >= cfg->offset_cursor_x+x_max-4) cfg->offset_cursor_x++;
-    if(cfg->cursor_x < cfg->offset_cursor_x) cfg->offset_cursor_x--;
+    if(cfg->cursor_x >= cfg->offset_cursor_x+x_max-4) cfg->offset_cursor_x = cfg->cursor_x-x_max+4;
+    if(cfg->cursor_x < cfg->offset_cursor_x) cfg->offset_cursor_x = cfg->cursor_x;
 }
 
 void editor_input(editor_cfg* cfg, int character_push){
@@ -206,6 +206,13 @@ void editor_processCommand(editor_cfg* cfg){
     }
     if(!strncmp(cfg->command_row->characters, "q", 1)){ // cmp to first 1 bytes
         cfg->quit = 1;
+    }
+    if(!strncmp(cfg->command_row->characters, "j", 1)){ // cmp to first 1 bytes
+        char line_to_jump_str[4] = "";
+        strncpy(line_to_jump_str, cfg->command_row->characters+2, cfg->command_row->size-2);
+        size_t line_to_jump = 0;
+        sscanf(line_to_jump_str, "%lu", &line_to_jump);
+        cfg->cursor_y = line_to_jump-1;
     }
     cfg->mode = TEXT_MODE;
 }

@@ -70,7 +70,7 @@ void util_printSyntaxC(const char* row_str, int cursor_x, int cursor_y, int x_ma
     };
     const char* red_words[] = {
         "return", "for", "while", "const", "if", "else",
-        "typedef", "struct", "case", "break", "default"
+        "typedef", "struct", "case", "break", "default", "switch"
     };
     const char* yellow_words[] = {
         "NULL"
@@ -95,7 +95,7 @@ void util_printSyntaxC(const char* row_str, int cursor_x, int cursor_y, int x_ma
             token[0] = '\0';
             continue;
         }
-        size_t isTokenRed = util_isTokenOnTheList(token, red_words, 11);
+        size_t isTokenRed = util_isTokenOnTheList(token, red_words, 12);
         if(isTokenRed != 0){
             size_t size_wrd = strlen(red_words[isTokenRed-1]);
             util_changeColorOnCells(color_cell, 4, i+1-size_wrd, size_wrd);
