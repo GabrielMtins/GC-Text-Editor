@@ -124,6 +124,17 @@ void util_printSyntaxC(const char* row_str, int cursor_x, int cursor_y, int x_ma
             } while(row_str[i] != '\"' && i < strlen(row_str));
             color_cell[i] = 3;
         }
+        if(row_str[i] == '\''){
+            do{
+                if(row_str[i] == '\\'){
+                    i+=2;
+                    continue;
+                }
+                color_cell[i] = 3;
+                i++;
+            } while(row_str[i] != '\'' && i < strlen(row_str));
+            color_cell[i] = 3;
+        }
         if(row_str[i] == ' ' || row_str[i] == ';' || row_str[i] == '{' || row_str[i] == '}'){
             token[0] = '\0';
         }
