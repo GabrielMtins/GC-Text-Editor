@@ -6,8 +6,10 @@
 #include <string.h>
 #include <ncurses.h>
 
-void editor_saveAsFile(const editor_cfg* cfg, const char* filename){
+void editor_saveAsFile(editor_cfg* cfg, const char* filename){
     FILE* file = fopen(filename, "w");
+    if(file == NULL) return;
+    strcpy(cfg->current_file, filename);
     for(size_t i = 0; i < cfg->current_row; i++){
         fprintf(file, "%s\n", cfg->rows_stack[i]->characters);
     }

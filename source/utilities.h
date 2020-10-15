@@ -5,7 +5,7 @@
 
 #include "editor.h"
 
-void editor_saveAsFile(const editor_cfg* cfg, const char* filename);
+void editor_saveAsFile(editor_cfg* cfg, const char* filename);
 
 void editor_loadFile(editor_cfg* cfg, const char* filename);
 
