@@ -110,10 +110,10 @@ void editor_controlCursor(editor_cfg* cfg, int key){
         break;
     }
     if(cfg->cursor_y >= cfg->current_row-1) cfg->cursor_y = cfg->current_row-1;
+    if(cfg->cursor_x >= cfg->rows_stack[cfg->cursor_y]->size) cfg->cursor_x = cfg->rows_stack[cfg->cursor_y]->size-1;
     // move the offset of the editor in the y axis
     if(cfg->cursor_y >= cfg->offset_cursor_y+y_max) cfg->offset_cursor_y++;
     if(cfg->cursor_y < cfg->offset_cursor_y) cfg->offset_cursor_y--;
-    if(cfg->cursor_x >= cfg->rows_stack[cfg->cursor_y]->size) cfg->cursor_x = cfg->rows_stack[cfg->cursor_y]->size-1;
     // move the offset of the editor in x axis
     if(cfg->cursor_x >= cfg->offset_cursor_x+x_max-4) cfg->offset_cursor_x++;
     if(cfg->cursor_x < cfg->offset_cursor_x) cfg->offset_cursor_x--;
@@ -169,22 +169,22 @@ void editor_popLastCharacter(editor_cfg* cfg){
         }
     }
     else{ // else we just pop the character of cursor on line
-        int deleted_char = isspace(edit_row->characters[cfg->cursor_x-1]);
+        int deleted_char_wasSpace = isspace(edit_row->characters[cfg->cursor_x-1]);
         row_remove(edit_row, cfg->cursor_x);
         if(cfg->cursor_x > 0){
             cfg->cursor_x--;
             if(cfg->cursor_x > 0){
-                int new_char = isspace(edit_row->characters[cfg->cursor_x-1]);
+                int new_char_wasSpace = isspace(edit_row->characters[cfg->cursor_x-1]);
                 // if both characters are space, we just deleted it until there is no space left
                 // i use this so I can delete tabs faster
-                if(new_char && deleted_char) editor_popLastCharacter(cfg);
+                if(new_char_wasSpace && deleted_char_wasSpace) editor_popLastCharacter(cfg);
             }
         }
     }
 }
 
 void editor_processCommand(editor_cfg* cfg){
-    if(!strncmp(cfg->command_row->characters, "w", 1)){ // cmp to first 2 bytes
+    if(!strncmp(cfg->command_row->characters, "w", 1)){ // cmp to first 1 bytes
         if(cfg->command_row->size == 2){ // save with the default filename
             editor_saveAsFile(cfg, cfg->current_file); // save file
         }
@@ -196,7 +196,7 @@ void editor_processCommand(editor_cfg* cfg){
         cfg->command_row->characters[0] = '\0';
         cfg->command_row->size = 1;
     }
-    if(!strncmp(cfg->command_row->characters, "r", 1)){ // cmp to first 2 bytes
+    if(!strncmp(cfg->command_row->characters, "r", 1)){ // cmp to first 1 bytes
         char load_file[256] = "";
         strncpy(load_file, cfg->command_row->characters+2, cfg->command_row->size-2); // cpy the final bytes
         cfg->mode = TEXT_MODE;
@@ -204,7 +204,7 @@ void editor_processCommand(editor_cfg* cfg){
         cfg->command_row->characters[0] = '\0';
         cfg->command_row->size = 1;
     }
-    if(!strncmp(cfg->command_row->characters, "q", 1)){ // cmp to first 2 bytes
+    if(!strncmp(cfg->command_row->characters, "q", 1)){ // cmp to first 1 bytes
         cfg->quit = 1;
     }
     cfg->mode = TEXT_MODE;
@@ -220,6 +220,7 @@ void editor_draw(const editor_cfg* cfg){
     if(min_lines > y_max) min_lines = y_max;// the minimum number of lines to print
     for(int i = 0; i < min_lines; i++){
         int line_number = i+1+cfg->offset_cursor_y;
+        if(cfg->rows_stack[line_number-1] == NULL) continue;
         int move_by = 0; // i need this for the numbers be aligned
         if(line_number < 10) move_by = 2;
         else if(line_number < 100) move_by = 1;
@@ -229,7 +230,7 @@ void editor_draw(const editor_cfg* cfg){
         util_printSyntaxC(cfg->rows_stack[line_number-1]->characters, 4, i, x_max-4, cfg->offset_cursor_x);
     }
     { // draw commands
-        attron(COLOR_PAIR(8));
+        attron(COLOR_PAIR(9));
         move(y_max, 0);
         for(int i = 0; i < x_max+1; i++){
             addch(' ');
