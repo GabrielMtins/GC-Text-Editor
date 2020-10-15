@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
+#include <ctype.h>
 #include <string.h>
 #include <ncurses.h>
 
@@ -55,6 +56,17 @@ static void util_changeColorOnCells(uint8_t* color_cell, uint8_t color, size_t s
     }
 }
 
+static uint8_t isCharANumber(char c){
+    if(c >= '0' && c <= '9') return 1;
+    return 0;
+}
+
+static uint8_t isCharAnOperation(char c){
+    if(c == '+' || c == '-' || c == '/' || c == '*' || c == '=' || c == '!'
+        || c == '<' || c == '>' || c == '&' || c == '|') return 1;
+    return 0;
+}
+
 void util_printSyntaxC(const char* row_str, int cursor_x, int cursor_y, int x_max, int offset_x){
     if(cursor_x < 0 || cursor_y < 0) return;
     move(cursor_y, cursor_x);
@@ -86,8 +98,7 @@ void util_printSyntaxC(const char* row_str, int cursor_x, int cursor_y, int x_ma
             break;
         }
         strncat(token, &row_str[i], 1);
-        if(row_str[i] == '+' || row_str[i] == '-' || row_str[i] == '/' || row_str[i] == '*' || row_str[i] == '!' ||
-        row_str[i] == '>' || row_str[i] == '<' || row_str[i] == '|' || row_str[i] == '&' || row_str[i] == '='){
+        if(isCharAnOperation(row_str[i])){
             color_cell[i] = 4;
         }
         size_t isTokenBlue = util_isTokenOnTheList(token, blue_words, 19);
@@ -112,12 +123,14 @@ void util_printSyntaxC(const char* row_str, int cursor_x, int cursor_y, int x_ma
             continue;
         }
         if(i < strlen(row_str)-1 && row_str[i] == '/' && row_str[i+1] == '/'){
+            // check if it's a comment
             while(i < strlen(row_str)){
                 color_cell[i] = 8;
                 i++;
             }
         }
         if(row_str[i] == '\"'){
+            // check if it's a string
             do{
                 if(row_str[i] == '\\'){
                     i+=2;
@@ -129,6 +142,7 @@ void util_printSyntaxC(const char* row_str, int cursor_x, int cursor_y, int x_ma
             color_cell[i] = 3;
         }
         if(row_str[i] == '\''){
+            // check if it's a character
             do{
                 if(row_str[i] == '\\'){
                     i+=2;
@@ -148,8 +162,12 @@ void util_printSyntaxC(const char* row_str, int cursor_x, int cursor_y, int x_ma
             }
             token[0] = '\0';
         }
-        if(row_str[i] >= '0' && row_str[i] <= '9'){
-            color_cell[i] = 6;
+
+        if(isCharANumber(row_str[i]) || row_str[i] == '.'){
+            // just to not color random numbers
+            if(i == 0 || isCharANumber(row_str[i-1]) || isspace(row_str[i-1]) || row_str[i-1] == '.' || isCharAOperation(row_str[i-1])){
+                color_cell[i] = 6;
+            }
         }
     }
     int size_of_array = strlen(row_str);
