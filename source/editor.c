@@ -56,6 +56,7 @@ void editor_addRow(editor_cfg* cfg){
             row_ptr[cfg->cursor_x] = '\0';
             // here we just copy the part in front of the cursor to another line:
             strcpy(cfg->rows_stack[cfg->cursor_y]->characters, new_line_str);
+            cfg->rows_stack[cfg->cursor_y-1]->size -= strlen(new_line_str); // subtract what we copied to the another line
             cfg->rows_stack[cfg->cursor_y]->size = strlen(new_line_str)+1;
         }
         else{
