@@ -1,5 +1,7 @@
 # GC-Text-Editor
 
+Contact: gabrielmartinsthe@gmail.com  
+
 Copyright(C) 2020 Gabriel Martins  
 
 A C text editor for linux under GNU GPL v3 license  

@@ -17,6 +17,7 @@
 
     You should have received a copy of the GNU General Public License
     along with GCTE.  If not, see <https://www.gnu.org/licenses/>
+    contact: gabrielmartinsthe@gmail.com
 */
 
 /* some utilities of the editor, like excluding tabs and putting spaces in place */
