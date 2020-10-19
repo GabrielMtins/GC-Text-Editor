@@ -4,6 +4,24 @@
 #include <ncurses.h>
 #include <stdio.h>
 
+/*
+    Copyright(C) 2020 Gabriel Martins
+    This file is part of GCTE.
+
+    GCTE is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    GCTE is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with GCTE.  If not, see <https://www.gnu.org/licenses/>
+*/
+
 editor_cfg* mainEditor = NULL;
 
 #define TEXT_DEFAULT_COLOR 1
@@ -32,6 +50,13 @@ void core_init(int argc, char** argv){
     if(argc > 1){
         editor_loadFile(mainEditor, argv[1]);
     }
+    printw("GCTE Copyright (C) 2020 Gabriel Martins\n");
+    printw("This program comes with ABSOLUTELY NO WARRANTY\n");
+    printw("This is free software, and you are welcome to redistribute it\n");
+    printw("under certain conditions; (read COPYING for details)\n");
+    printw("Press any key to continue\n");
+    refresh();
+    getch();
 }
 
 void core_input(){
