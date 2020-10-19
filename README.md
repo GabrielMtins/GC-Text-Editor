@@ -1,6 +1,8 @@
 # GC-Text-Editor
 
-A C text editor for linux  
+Copyright(C) 2020 Gabriel Martins  
+
+A C text editor for linux under GNU GPL v3 license  
 
 To compile just type it:
 
