@@ -262,8 +262,9 @@ void editor_draw(const editor_cfg* cfg){
         }
         else{
             attron(COLOR_PAIR(1));
-            char to_print[x_max-4];
-            strncpy(to_print, cfg->rows_stack[line_number-1]->characters, x_max-4);
+            char to_print[x_max-3];
+            strncpy(to_print, cfg->rows_stack[line_number-1]->characters+cfg->offset_cursor_x, x_max-3);
+            to_print[x_max-3] = '\0';
             move(i, 4);
             printw("%s", to_print);
         }
