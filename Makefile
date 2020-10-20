@@ -1,9 +1,14 @@
 CC = gcc
 EXEC ?= main
 
-CFLAGS := -Wall -Wextra -lcurses -O2
+CCFLAGS := -Wall -Wextra -O2
 
-source := source/*.c
+LIBFLAGS := -lcurses
 
-$(EXEC): $(source)
-	$(CC) $(source) $(CFLAGS) -o $(EXEC)
+SOURCE := $(wildcard source/*.c)
+
+$(EXEC): $(SOURCE)
+	$(CC) $(SOURCE) $(CCFLAGS) $(LIBFLAGS) -o $(EXEC)
+
+clean:
+	rm main
