@@ -3,6 +3,7 @@
 #include "utilities.h"
 #include <ncurses.h>
 #include <stdio.h>
+#include <string.h>
 
 /*
     Copyright(C) 2020 Gabriel Martins
@@ -51,13 +52,23 @@ void core_init(int argc, char** argv){
     if(argc > 1){
         editor_loadFile(mainEditor, argv[1]);
     }
-    printw("GCTE Copyright (C) 2020 Gabriel Martins\n");
-    printw("This program comes with ABSOLUTELY NO WARRANTY\n");
-    printw("This is free software, and you are welcome to redistribute it\n");
-    printw("under certain conditions; (read COPYING for details)\n");
-    printw("Press any key to continue\n");
-    refresh();
-    getch();
+    { // start screen
+        int y_max, x_max;
+        getmaxyx(stdscr, y_max, x_max);
+        const char* text[] = {
+            "GCTE Copyright (C) 2020 Gabriel Martins\n",
+            "This program comes with ABSOLUTELY NO WARRANTY\n",
+            "This is free software, and you are welcome to redistribute it\n",
+            "under certain conditions; (read COPYING for details)\n",
+            "Press any key to continue\n"
+        };
+        for(int i = 0; i < 5; i++){
+            move(y_max/2-2+i, x_max/2-strlen(text[i])/2);
+            printw(text[i]);
+        }
+        refresh();
+        getch();
+    }
 }
 
 void core_input(){
