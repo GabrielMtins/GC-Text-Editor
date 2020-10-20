@@ -178,11 +178,12 @@ void util_printSyntaxC(const char* row_str, int cursor_x, int cursor_y, int x_ma
         if(row_str[i] == '('){ // detect functions
             for(int j = i-1; row_str[j] != ' ' && color_cell[j] == 1; j--){
                 if(row_str[j] == '(') continue;
+                if(row_str[j] == '{') break;
+                if(row_str[j] == '[') break;
                 color_cell[j] = 2;
             }
             token[0] = '\0';
         }
-
         if(isCharANumber(row_str[i]) || row_str[i] == '.'){
             // just to not color random numbers
             if(i == 0 || isCharANumber(row_str[i-1]) || isspace(row_str[i-1]) || row_str[i-1] == '.' || isCharAnOperation(row_str[i-1])
