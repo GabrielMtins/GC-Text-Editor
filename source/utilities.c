@@ -172,7 +172,7 @@ void util_printSyntaxC(const char* row_str, int cursor_x, int cursor_y, int x_ma
             } while(row_str[i] != '\'' && i < strlen(row_str));
             color_cell[i] = 3;
         }
-        if(row_str[i] == ' ' || row_str[i] == ';' || row_str[i] == '{' || row_str[i] == '}'){
+        if(row_str[i] == ' ' || row_str[i] == ';' || row_str[i] == '{' || row_str[i] == '}' || row_str[i] == ','){
             token[0] = '\0';
         }
         if(row_str[i] == '('){ // detect functions
@@ -185,9 +185,9 @@ void util_printSyntaxC(const char* row_str, int cursor_x, int cursor_y, int x_ma
             token[0] = '\0';
         }
         if(isCharANumber(row_str[i]) || row_str[i] == '.'){
-            // just to not color random numbers
+            // color numbers
             if(i == 0 || isCharANumber(row_str[i-1]) || isspace(row_str[i-1]) || row_str[i-1] == '.' || isCharAnOperation(row_str[i-1])
-                || row_str[i-1] == '[' || row_str[i-1] == '(' || row_str[i-1] == '{'){
+                || row_str[i-1] == '[' || row_str[i-1] == '(' || row_str[i-1] == '{' || row_str[i-1] == ','){
                 color_cell[i] = 6;
             }
         }

@@ -58,23 +58,13 @@ void core_init(int argc, char** argv){
             "This is free software, and you are welcome to redistribute it\n",
             "under certain conditions; (read COPYING for details)\n",
             "Press any key to continue\n",
-            "Or press C to read the GNU GPL v3 license\n"
         };
-        for(int i = 0; i < 6; i++){
+        for(int i = 0; i < 5; i++){
             move(y_max/2-3+i, x_max/2-strlen(text[i])/2);
             printw(text[i]);
         }
         refresh();
-        switch(getch()){
-            case 'c':
-            editor_loadFile(mainEditor, "COPYING");
-            return;
-            break;
-            case 'C':
-            editor_loadFile(mainEditor, "COPYING");
-            return;
-            break;
-        }
+        getch();
     }
     if(argc > 1){
         editor_loadFile(mainEditor, argv[1]);
