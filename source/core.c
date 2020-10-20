@@ -49,9 +49,6 @@ void core_init(int argc, char** argv){
     attron(COLOR_PAIR(1));
     curs_set(1);
     mainEditor = editor_create();
-    if(argc > 1){
-        editor_loadFile(mainEditor, argv[1]);
-    }
     { // start screen
         int y_max, x_max;
         getmaxyx(stdscr, y_max, x_max);
@@ -60,14 +57,27 @@ void core_init(int argc, char** argv){
             "This program comes with ABSOLUTELY NO WARRANTY\n",
             "This is free software, and you are welcome to redistribute it\n",
             "under certain conditions; (read COPYING for details)\n",
-            "Press any key to continue\n"
+            "Press any key to continue\n",
+            "Or press C to read the GNU GPL v3 license\n"
         };
-        for(int i = 0; i < 5; i++){
-            move(y_max/2-2+i, x_max/2-strlen(text[i])/2);
+        for(int i = 0; i < 6; i++){
+            move(y_max/2-3+i, x_max/2-strlen(text[i])/2);
             printw(text[i]);
         }
         refresh();
-        getch();
+        switch(getch()){
+            case 'c':
+            editor_loadFile(mainEditor, "COPYING");
+            return;
+            break;
+            case 'C':
+            editor_loadFile(mainEditor, "COPYING");
+            return;
+            break;
+        }
+    }
+    if(argc > 1){
+        editor_loadFile(mainEditor, argv[1]);
     }
 }
 

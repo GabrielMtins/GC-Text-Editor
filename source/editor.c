@@ -230,6 +230,11 @@ void editor_processCommand(editor_cfg* cfg){
         sscanf(line_to_jump_str, "%lu", &line_to_jump);
         cfg->cursor_y = line_to_jump-1;
     }
+    if(!strncmp(cfg->command_row->characters, "n", 1)){ // cmp to first 1 bytes
+        editor_cleanLines(cfg);
+        editor_addRow(cfg);
+        cfg->cursor_y = 0;
+    }
     cfg->command_row->characters[0] = '\0';
     cfg->command_row->size = 1;
     cfg->mode = TEXT_MODE;
@@ -252,7 +257,16 @@ void editor_draw(const editor_cfg* cfg){
         attron(COLOR_PAIR(7)); // set color to magenta
         move(i, move_by);
         printw("%i", line_number); // print the number of the line
-        util_printSyntaxC(cfg->rows_stack[line_number-1]->characters, 4, i, x_max-4, cfg->offset_cursor_x);
+        if(!strncmp(cfg->current_file+strlen(cfg->current_file)-2, ".c", 2)){ // if its a c file
+            util_printSyntaxC(cfg->rows_stack[line_number-1]->characters, 4, i, x_max-4, cfg->offset_cursor_x);
+        }
+        else{
+            attron(COLOR_PAIR(1));
+            char to_print[x_max-4];
+            strncpy(to_print, cfg->rows_stack[line_number-1]->characters, x_max-4);
+            move(i, 4);
+            printw("%s", to_print);
+        }
     }
     { // draw commands
         attron(COLOR_PAIR(9));
