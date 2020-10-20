@@ -257,7 +257,8 @@ void editor_draw(const editor_cfg* cfg){
         attron(COLOR_PAIR(7)); // set color to magenta
         move(i, move_by);
         printw("%i", line_number); // print the number of the line
-        if(!strncmp(cfg->current_file+strlen(cfg->current_file)-2, ".c", 2)){ // if its a c file
+        if(!strncmp(cfg->current_file+strlen(cfg->current_file)-2, ".c", 2)|
+           !strncmp(cfg->current_file+strlen(cfg->current_file)-2, ".h", 2)){ // if its a c file
             util_printSyntaxC(cfg->rows_stack[line_number-1]->characters, 4, i, x_max-4, cfg->offset_cursor_x);
         }
         else{
