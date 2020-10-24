@@ -120,21 +120,9 @@ void editor_controlCursor(editor_cfg* cfg, int key){
         if(cfg->cursor_y >= cfg->current_row-1){
             cfg->cursor_y = cfg->current_row-1;
         }
-        if(cfg->cursor_y < cfg->current_row){
-            if(cfg->cursor_x == cfg->rows_stack[cfg->cursor_y-1]->size-1){
-                // if the cursor is on the tip, we put it on the other tip
-                cfg->cursor_x = cfg->rows_stack[cfg->cursor_y]->size-1;
-            }
-        }
         break;
         case KEY_UP:
         if(cfg->cursor_y > 0) cfg->cursor_y--;
-        if(cfg->cursor_y > 0){
-            if(cfg->cursor_x == cfg->rows_stack[cfg->cursor_y+1]->size-1){
-                // if the cursor is on the tip, we put it on the other tip
-                cfg->cursor_x = cfg->rows_stack[cfg->cursor_y]->size-1;
-            }
-        }
         break;
         case KEY_BACKSPACE:
         editor_popLastCharacter(cfg);
