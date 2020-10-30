@@ -177,7 +177,7 @@ void editor_popLastCharacter(editor_cfg* cfg){
     row* edit_row = cfg->rows_stack[cfg->cursor_y];
     if(edit_row == NULL) return;
     if(edit_row->size == 1){ // if the size is equal one, we just destroy the current line
-        if(cfg->cursor_y > 0){ // we cant destroy the first line
+        if(cfg->current_row > 1){ // we cant destroy the first line
             row_destroy(edit_row);
             cfg->rows_stack[cfg->cursor_y] = NULL;
             if(cfg->current_row != cfg->cursor_y+1){
@@ -190,7 +190,7 @@ void editor_popLastCharacter(editor_cfg* cfg){
             if(cfg->cursor_y == cfg->current_row-1) cfg->cursor_x = cfg->rows_stack[cfg->cursor_y-1]->size;
             // just change the cursor to the end of the current row
             cfg->current_row--;
-            cfg->cursor_y--;
+            if(cfg->cursor_y > 0) cfg->cursor_y--;
         }
     }
     else{ // else we just pop the character of cursor on line
